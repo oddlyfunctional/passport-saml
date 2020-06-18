@@ -920,13 +920,18 @@ describe( 'passport-saml /', function() {
         var samlObj = new SAML( samlConfig );
         var decryptionCert = fs.readFileSync(__dirname + '/static/testshib encryption cert.pem', 'utf-8');
         var metadata = samlObj.generateServiceProviderMetadata( decryptionCert, signingCert );
+
+        function format(str) {
+          return str.split( '\n' ).filter(Boolean);
+        }
+
         // splits are to get a nice diff if they don't match for some reason
-        metadata.split( '\n' ).should.eql( expectedMetadata.split( '\n' ) );
+        format(metadata).should.eql( format(expectedMetadata) );
 
         // verify that we are exposed through Strategy as well
         var strategy = new SamlStrategy( samlConfig, function() {} );
         metadata = strategy.generateServiceProviderMetadata( decryptionCert, signingCert );
-        metadata.split( '\n' ).should.eql( expectedMetadata.split( '\n' ) );
+        format(metadata).should.eql( format(expectedMetadata) );
       }
 
       it( 'config with callbackUrl and decryptionPvk should pass', function() {
